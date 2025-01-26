@@ -9,10 +9,10 @@ const fontSize = 20; // 文字サイズを小さく
 const columns = Math.floor(canvas.width / (fontSize * 0.6)); // 列数を増やす
 const drops = new Array(columns).fill(null).map(() => ({
   y: Math.random() * canvas.height * -1,
-  speed: 0.5 + Math.random() * 0.3, // 落下速度を遅く
+  speed: 2 + Math.random() * 1, // 落下速度を速く
   lastUpdate: 0,
   currentChar: characters[Math.floor(Math.random() * characters.length)],
-  nextUpdate: Math.random() * 3000 // 文字切り替えのタイミング
+  nextUpdate: 1000 // 文字切り替えのタイミングを5秒に固定
 }));
 
 let mousePath = [];
