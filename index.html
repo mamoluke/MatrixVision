@@ -3,92 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Matrix Effect with Glow</title>
+  <title>Matrix Effect with Enhanced Mouse Trail</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      background: black !important; /* 他のCSSの上書きを防ぐ */
+      background: black !important;
     }
   </style>
-
 </head>
 <body>
   <canvas id="matrixCanvas"></canvas>
   <script>
     const canvas = document.getElementById('matrixCanvas');
     const ctx = canvas.getContext('2d');
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const fontSize = 20; // 文字サイズ
-    const columns = Math.floor(canvas.width / fontSize); // 列の数
-    const drops = Array(columns).fill(0); // 各列のドロップ開始位置
-    let mouseTrail = []; // マウスの軌跡を保存する配列
+    const fontSize = 20;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(0);
+    let mouseTrail = [];
+    let currentMousePos = { x: 0, y: 0 };
 
-    // 背景文字を描画する関数
     function drawMatrix() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; // 背景を黒くしつつ残像効果を作成
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#0F0'; // 緑色の文字
+      ctx.fillStyle = '#0F0';
       ctx.font = `${fontSize}px monospace`;
+      ctx.shadowBlur = 0;
 
       for (let i = 0; i < drops.length; i++) {
         const text = characters[Math.floor(Math.random() * characters.length)];
-        const x = i * fontSize; // 列間隔
-        const y = drops[i] * fontSize; // 現在の位置
-
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
         ctx.fillText(text, x, y);
-
         if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0; // リセットして再降下
+          drops[i] = 0;
         }
-
-        drops[i]++; // 降るスピード
+        drops[i]++;
       }
     }
 
-    // マウスの軌跡を描画する関数
     function drawMouseTrail() {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      
+      // 現在のマウス位置に大きな円を描画
+      ctx.beginPath();
+      ctx.arc(currentMousePos.x, currentMousePos.y, 15, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = '#0F0';
+      ctx.fill();
+
+      // 外側の輪
+      ctx.beginPath();
+      ctx.arc(currentMousePos.x, currentMousePos.y, 20, 0, Math.PI * 2);
+      ctx.strokeStyle = '#0F0';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
       mouseTrail.forEach((trail, index) => {
         ctx.beginPath();
         ctx.arc(trail.x, trail.y, trail.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${trail.opacity})`;
-        ctx.shadowBlur = 15; // 光のぼやけ具合
-        ctx.shadowColor = 'white';
+        ctx.fillStyle = `rgba(0, 255, 0, ${trail.opacity * 0.2})`;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#0F0';
         ctx.fill();
-
-        // 軌跡の透明度とサイズを減少
+        
         trail.opacity -= 0.02;
         trail.radius += 0.5;
-
-        // 軌跡が消える条件
+        
         if (trail.opacity <= 0) {
           mouseTrail.splice(index, 1);
         }
       });
+      
+      ctx.restore();
     }
 
-    // マウス移動イベントを監視
     canvas.addEventListener('mousemove', (event) => {
       const rect = canvas.getBoundingClientRect();
-      mouseTrail.push({
+      currentMousePos = {
         x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
-        radius: 5, // 初期の半径
-        opacity: 0.5, // 初期の透明度
+        y: event.clientY - rect.top
+      };
+      
+      mouseTrail.push({
+        x: currentMousePos.x,
+        y: currentMousePos.y,
+        radius: 5,
+        opacity: 0.4
       });
-
-      // 配列が長くなりすぎないよう制限
-      if (mouseTrail.length > 100) {
+      
+      if (mouseTrail.length > 30) {
         mouseTrail.shift();
       }
     });
 
-    // キャンバスサイズをリサイズ時に更新
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -96,10 +109,9 @@
       drops.fill(0);
     });
 
-    // アニメーションを開始する関数
     function animate() {
-      drawMatrix(); // 背景文字
-      drawMouseTrail(); // マウスの光の軌跡
+      drawMatrix();
+      drawMouseTrail();
       requestAnimationFrame(animate);
     }
 
