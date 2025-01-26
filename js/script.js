@@ -11,33 +11,26 @@ const fontSize = 20; // 文字サイズ
 const columns = Math.floor(canvas.width / fontSize); // 列の数
 const drops = Array(columns).fill(0); // 各列のドロップ開始位置
 
-// 背景文字を描画する関数
 function drawMatrix() {
-  // 背景を半透明の黒で塗りつぶして文字の残像効果を作成
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; // 半透明の黒で背景を塗りつぶす
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // 文字の色とフォント設定
-  ctx.fillStyle = '#0F0'; // 緑色
+  ctx.fillStyle = '#0F0'; // 緑色の文字
   ctx.font = `${fontSize}px monospace`;
 
-  // 各列ごとに文字を描画
   for (let i = 0; i < drops.length; i++) {
-    const text = characters[Math.floor(Math.random() * characters.length)]; // ランダムな文字
-    const x = i * fontSize; // 列間隔
-    const y = drops[i] * fontSize; // 現在の位置
+    const text = characters[Math.floor(Math.random() * characters.length)];
+    const x = i * fontSize;
+    const y = drops[i] * fontSize;
 
-    // 文字を描画
     ctx.fillText(text, x, y);
 
-    // ドロップの位置を更新
     if (y > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0; // リセットして再降下
+      drops[i] = 0;
     }
-
-    drops[i]++; // 降るスピード
+    drops[i]++;
   }
 }
+
 
 // アニメーションを開始する関数
 function animate() {
