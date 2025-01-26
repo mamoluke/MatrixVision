@@ -39,7 +39,7 @@ function drawMatrix() {
       drops[i] = 0; // リセット
     }
 
-    drops[i] += 0.5; // 降るスピードをゆっくりにする
+    drops[i] += 0.2; // 降るスピードをさらに遅くする
   }
 }
 
@@ -48,8 +48,10 @@ function drawMousePath() {
   if (mousePath.length < 2) return; // 線を描画するのに最低2点必要
 
   ctx.beginPath();
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+  ctx.lineWidth = 10; // 太い線
+  ctx.lineJoin = 'round'; // 滑らかな接続
+  ctx.lineCap = 'round'; // 丸い端
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
   ctx.moveTo(mousePath[0].x, mousePath[0].y);
 
   for (let i = 1; i < mousePath.length; i++) {
@@ -59,7 +61,7 @@ function drawMousePath() {
 
   // 軌跡を徐々にフェードアウト
   for (let i = 0; i < mousePath.length; i++) {
-    mousePath[i].opacity -= 0.02;
+    mousePath[i].opacity -= 0.1; // より早く消える
     if (mousePath[i].opacity <= 0) {
       mousePath.splice(i, 1);
       i--;
@@ -77,7 +79,7 @@ canvas.addEventListener('mousemove', (event) => {
   });
 
   // 配列が長くなりすぎないよう制限
-  if (mousePath.length > 100) {
+  if (mousePath.length > 50) { // 軌跡の長さを短めに
     mousePath.shift();
   }
 });
