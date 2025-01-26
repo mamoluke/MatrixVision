@@ -8,12 +8,10 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: black; /* 背景を黒に設定 */
-    }
-    canvas {
-      display: block;
+      background: black !important; /* 他のCSSの上書きを防ぐ */
     }
   </style>
+
 </head>
 <body>
   <canvas id="matrixCanvas"></canvas>
