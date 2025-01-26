@@ -1,0 +1,14 @@
+/* 全体の基本設定 */
+body {
+  margin: 0;
+  overflow: hidden;
+  background: black;
+}
+
+/* キャンバスのスタイル */
+canvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
