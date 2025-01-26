@@ -29,6 +29,8 @@
     const columns = Math.floor(canvas.width / fontSize); // 列の数
     const drops = Array(columns).fill(0); // 各列のドロップ開始位置
 
+    let glowInterval = 0; // 光る速度調整用のカウンター
+
     function drawMatrix() {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; // 背景の暗さ
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -37,18 +39,23 @@
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
-        const text = characters[Math.floor(Math.random() * characters.length)];
-        const x = i * fontSize; // 列間隔
-        const y = drops[i] * fontSize; // 現在の位置
+        // 一定間隔で文字を更新する
+        if (glowInterval % 3 === 0) { // 数値を変更して速度を調整（大きいほどゆっくり）
+          const text = characters[Math.floor(Math.random() * characters.length)];
+          const x = i * fontSize; // 列間隔
+          const y = drops[i] * fontSize; // 現在の位置
 
-        ctx.fillText(text, x, y);
+          ctx.fillText(text, x, y);
 
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0; // リセットして再降下
+          if (y > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0; // リセットして再降下
+          }
+
+          drops[i]++; // 降るスピード
         }
-
-        drops[i]++; // 降るスピード
       }
+
+      glowInterval++; // カウンターを更新
     }
 
     function animate() {
