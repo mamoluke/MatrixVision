@@ -6,9 +6,9 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// マトリックスの文字列
-const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const fontSize = 25; // 文字サイズを調整
+// マトリックスの文字列（スペースを含む）
+const characters = ' 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ ';
+const fontSize = 30; // 文字サイズを調整（間隔を広げる）
 const columns = canvas.width / fontSize; // 列の数
 const drops = Array(Math.floor(columns)).fill(0); // 各列のドロップ開始位置
 
@@ -30,43 +30,39 @@ function drawMatrix() {
   ctx.font = `${fontSize}px monospace`;
 
   for (let i = 0; i < drops.length; i++) {
+    // ランダムな文字またはスペースを選択
     const text = characters[Math.floor(Math.random() * characters.length)];
     const x = i * fontSize; // 列間隔を文字サイズで調整
     const y = drops[i] * fontSize;
 
+    // 文字を描画
     ctx.fillText(text, x, y);
 
-    // ランダムで文字をリセットしてスピードを調整
+    // 画面下に到達した列をリセットし、ランダムな位置で再スタート
     if (y > canvas.height && Math.random() > 0.975) {
-      drops[i] = 0; // リセット
+      drops[i] = 0;
     }
 
-    drops[i] += 0.3; // 降るスピードをゆっくりに
+    drops[i] += 0.3; // 文字の降るスピードを調整
   }
 }
 
 // マウス軌跡を描画する関数
 function drawMousePath() {
-  if (mousePath.length < 2) return; // 線を描画するのに最低2点必要
+  if (mousePath.length < 2) return; // 波動を描画するのに最低2点必要
 
-  ctx.beginPath();
-  ctx.lineWidth = 20; // 太めの線
-  ctx.lineJoin = 'round'; // 滑らかな接続
-  ctx.lineCap = 'round'; // 丸い端
-
-  // 動きの波動を表現
-  for (let i = 0; i < mousePath.length; i++) {
-    const segment = mousePath[i];
-    ctx.strokeStyle = `rgba(255, 255, 255, ${segment.opacity})`;
-    ctx.beginPath();
-    ctx.arc(segment.x, segment.y, segment.radius, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
-  // 軌跡の透明度と半径を徐々に減少
+  // 軌跡ごとに波動を描画
   mousePath.forEach((segment, index) => {
+    for (let i = 0; i < 3; i++) { // 波動を3倍出力
+      ctx.beginPath();
+      ctx.arc(segment.x, segment.y, segment.radius + i * 15, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255, 255, 255, ${segment.opacity - i * 0.1})`;
+      ctx.lineWidth = 10;
+      ctx.stroke();
+    }
+    // 半径を拡大し透明度を減少
+    segment.radius += 5; // サイズを2倍くらいに拡大
     segment.opacity -= 0.05;
-    segment.radius += 2; // 半径を拡大して波のように
     if (segment.opacity <= 0) {
       mousePath.splice(index, 1);
     }
@@ -79,9 +75,14 @@ canvas.addEventListener('mousemove', (event) => {
   mousePath.push({
     x: event.clientX - rect.left,
     y: event.clientY - rect.top,
-    radius: 5, // 初期半径を小さく
-    opacity: 0.5, // 最初の明るさを暗めに
+    radius: 10, // 初期半径
+    opacity: 0.8, // 初期透明度
   });
+
+  // 配列が長くなりすぎないよう制限
+  if (mousePath.length > 100) {
+    mousePath.shift();
+  }
 });
 
 // アニメーションの開始
