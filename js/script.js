@@ -11,8 +11,8 @@ const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const columns = canvas.width / 20; // 列の数
 const drops = Array(Math.floor(columns)).fill(1);
 
-// 光の軌跡を保持する配列
-const trails = [];
+// 線の軌跡を保持する配列
+let mousePath = [];
 
 // ウィンドウリサイズ時にキャンバスのサイズを更新
 window.addEventListener('resize', () => {
@@ -35,48 +35,57 @@ function drawMatrix() {
 
     ctx.fillText(text, x, y);
 
-    if (y > canvas.height && Math.random() > 0.95) {
+    if (y > canvas.height && Math.random() > 0.975) {
       drops[i] = 0; // リセット
     }
 
-    drops[i]++;
+    drops[i] += 0.5; // 降るスピードをゆっくりにする
   }
 }
 
-// 光の軌跡を描画する関数
-function drawTrails() {
-  trails.forEach((trail, index) => {
-    ctx.beginPath();
-    ctx.arc(trail.x, trail.y, trail.size, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255, 255, 255, ${trail.opacity})`;
-    ctx.fill();
+// マウス軌跡を描画する関数
+function drawMousePath() {
+  if (mousePath.length < 2) return; // 線を描画するのに最低2点必要
 
-    // 軌跡を少しずつ小さくして消していく
-    trail.size *= 0.95; // サイズを縮小
-    trail.opacity -= 0.02; // 透明度を低下
+  ctx.beginPath();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+  ctx.moveTo(mousePath[0].x, mousePath[0].y);
 
-    // 完全に消えたら配列から削除
-    if (trail.opacity <= 0) {
-      trails.splice(index, 1);
+  for (let i = 1; i < mousePath.length; i++) {
+    ctx.lineTo(mousePath[i].x, mousePath[i].y);
+  }
+  ctx.stroke();
+
+  // 軌跡を徐々にフェードアウト
+  for (let i = 0; i < mousePath.length; i++) {
+    mousePath[i].opacity -= 0.02;
+    if (mousePath[i].opacity <= 0) {
+      mousePath.splice(i, 1);
+      i--;
     }
-  });
+  }
 }
 
-// マウスの移動を監視し、軌跡を追加
+// マウスの移動を監視し、軌跡を更新
 canvas.addEventListener('mousemove', (event) => {
   const rect = canvas.getBoundingClientRect();
-  trails.push({
+  mousePath.push({
     x: event.clientX - rect.left,
     y: event.clientY - rect.top,
-    size: 10,
     opacity: 1,
   });
+
+  // 配列が長くなりすぎないよう制限
+  if (mousePath.length > 100) {
+    mousePath.shift();
+  }
 });
 
 // アニメーションの開始
 function animate() {
   drawMatrix(); // マトリックス描画
-  drawTrails(); // 軌跡描画
+  drawMousePath(); // マウス軌跡描画
   requestAnimationFrame(animate);
 }
 
