@@ -8,7 +8,7 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: black;
+      background: black; /* 背景を黒に設定 */
     }
     canvas {
       display: block;
@@ -32,7 +32,7 @@
 
     // 背景文字を描画する関数
     function drawMatrix() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; // 背景の暗さ
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; // 背景を黒くしつつ残像効果を作成
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.fillStyle = '#0F0'; // 緑色の文字
