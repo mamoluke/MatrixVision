@@ -9,7 +9,7 @@ const fontSize = 20; // 文字サイズを小さく
 const columns = Math.floor(canvas.width / (fontSize * 0.6)); // 列数を増やす
 const drops = new Array(columns).fill(null).map(() => ({
   y: Math.random() * canvas.height * -1,
-  speed: 0.5 + Math.random() * 0.3, // 落下速度
+  speed: 2 + Math.random() * 1, // 落下速度を速く
   lastUpdate: 0,
   currentChar: characters[Math.floor(Math.random() * characters.length)],
   nextUpdate: 500 // 文字切り替えを0.5秒に固定
@@ -23,7 +23,7 @@ window.addEventListener('resize', () => {
 });
 
 function drawMatrix(timestamp) {
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // 残像を減らす
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = '#0F0';
@@ -63,7 +63,7 @@ function drawMousePath() {
       ctx.stroke();
     }
     segment.radius += 1.5;
-    segment.opacity -= 0.01; // 消えるスピードを遅く
+    segment.opacity -= 0.03; // 消えるスピードを速く
     if (segment.opacity <= 0) {
       mousePath.splice(index, 1);
     }
