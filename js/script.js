@@ -52,16 +52,16 @@ function drawMousePath() {
   if (mousePath.length < 2) return; // 波動を描画するのに最低2点必要
 
   mousePath.forEach((segment, index) => {
-    for (let i = 0; i < 9; i++) { // 波動を9倍出力
+    for (let i = 0; i < 15; i++) { // 波動を15倍出力
       ctx.beginPath();
-      ctx.arc(segment.x, segment.y, segment.radius + i * 7, 0, Math.PI * 2); // サイズを縮小
-      ctx.strokeStyle = `rgba(255, 255, 255, ${segment.opacity - i * 0.05})`; // 強さを弱める
-      ctx.lineWidth = 7; // 線の太さを小さく
+      ctx.arc(segment.x, segment.y, segment.radius + i * 5, 0, Math.PI * 2); // サイズを調整
+      ctx.strokeStyle = `rgba(255, 255, 255, ${segment.opacity - i * 0.03})`; // 光の強さを弱める
+      ctx.lineWidth = 5; // 線の太さを細く
       ctx.stroke();
     }
     // 半径を拡大し透明度を減少
-    segment.radius += 3; // 半径の増加を遅くして小さく
-    segment.opacity -= 0.03; // 光の強さを早く弱める
+    segment.radius += 2; // 半径の増加をさらに小さく
+    segment.opacity -= 0.02; // 光の強さをさらに早く弱める
     if (segment.opacity <= 0) {
       mousePath.splice(index, 1);
     }
@@ -75,7 +75,7 @@ canvas.addEventListener('mousemove', (event) => {
     x: event.clientX - rect.left,
     y: event.clientY - rect.top,
     radius: 5, // 初期半径を小さめに
-    opacity: 0.5, // 初期透明度を弱めに
+    opacity: 0.3, // 初期透明度をさらに弱く
   });
 
   // 配列が長くなりすぎないよう制限
