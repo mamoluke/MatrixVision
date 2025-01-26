@@ -11,8 +11,14 @@ const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const columns = canvas.width / 20; // 列の数
 const drops = Array(Math.floor(columns)).fill(1);
 
-// 光の軌跡の配列
+// 光の軌跡を保持する配列
 const trails = [];
+
+// ウィンドウリサイズ時にキャンバスのサイズを更新
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 
 // 描画処理（マトリックス効果）
 function drawMatrix() {
@@ -46,8 +52,8 @@ function drawTrails() {
     ctx.fill();
 
     // 軌跡を少しずつ小さくして消していく
-    trail.size *= 0.95;
-    trail.opacity -= 0.02;
+    trail.size *= 0.95; // サイズを縮小
+    trail.opacity -= 0.02; // 透明度を低下
 
     // 完全に消えたら配列から削除
     if (trail.opacity <= 0) {
@@ -69,9 +75,10 @@ canvas.addEventListener('mousemove', (event) => {
 
 // アニメーションの開始
 function animate() {
-  drawMatrix();
-  drawTrails();
+  drawMatrix(); // マトリックス描画
+  drawTrails(); // 軌跡描画
   requestAnimationFrame(animate);
 }
 
+// アニメーション開始
 animate();
