@@ -12,8 +12,8 @@ const fontSize = 30; // 文字サイズを調整（間隔を広げる）
 const columns = canvas.width / fontSize; // 列の数
 const drops = Array(Math.floor(columns)).fill(0); // 各列のドロップ開始位置
 
-// 線の軌跡を保持する配列
-let mousePath = [];
+// 使用中の列を追跡するフラグ
+const activeColumns = Array(Math.floor(columns)).fill(false);
 
 // ウィンドウリサイズ時にキャンバスのサイズを更新
 window.addEventListener('resize', () => {
@@ -30,6 +30,9 @@ function drawMatrix() {
   ctx.font = `${fontSize}px monospace`;
 
   for (let i = 0; i < drops.length; i++) {
+    // 列が既にアクティブならスキップ
+    if (activeColumns[i]) continue;
+
     // ランダムな文字またはスペースを選択
     const text = characters[Math.floor(Math.random() * characters.length)];
     const x = i * fontSize; // 列間隔を文字サイズで調整
@@ -38,26 +41,34 @@ function drawMatrix() {
     // 文字を描画
     ctx.fillText(text, x, y);
 
+    // この列をアクティブとしてマーク
+    activeColumns[i] = true;
+
     // 画面下に到達した列をリセットし、ランダムな位置で再スタート
     if (y > canvas.height && Math.random() > 0.975) {
       drops[i] = 0;
+      activeColumns[i] = false; // 列を再びアクティブ化可能にする
     }
 
     drops[i] += 0.3; // 文字の降るスピードを調整
   }
+
+  // サイクルの最後にすべての列を非アクティブ化
+  for (let i = 0; i < activeColumns.length; i++) {
+    activeColumns[i] = false;
+  }
 }
 
-// マウス軌跡を描画する関数
+// マウス軌跡を描画する関数（波動エフェクト）
 function drawMousePath() {
   if (mousePath.length < 2) return; // 波動を描画するのに最低2点必要
 
-  // 軌跡ごとに波動を描画
   mousePath.forEach((segment, index) => {
     for (let i = 0; i < 9; i++) { // 波動を9倍出力
       ctx.beginPath();
-      ctx.arc(segment.x, segment.y, segment.radius + i * 20, 0, Math.PI * 2);
+      ctx.arc(segment.x, segment.y, segment.radius + i * 10, 0, Math.PI * 2);
       ctx.strokeStyle = `rgba(255, 255, 255, ${segment.opacity - i * 0.08})`;
-      ctx.lineWidth = 20; // 線の太さ
+      ctx.lineWidth = 10; // 線の太さ
       ctx.stroke();
     }
     // 半径を拡大し透明度を減少
@@ -70,13 +81,14 @@ function drawMousePath() {
 }
 
 // マウスの移動を監視し、波動を作成
+const mousePath = [];
 canvas.addEventListener('mousemove', (event) => {
   const rect = canvas.getBoundingClientRect();
   mousePath.push({
     x: event.clientX - rect.left,
     y: event.clientY - rect.top,
-    radius: 8, // 初期半径を大きめに
-    opacity: 0.5, // 初期透明度
+    radius: 10, // 初期半径を大きめに
+    opacity: 0.8, // 初期透明度
   });
 
   // 配列が長くなりすぎないよう制限
