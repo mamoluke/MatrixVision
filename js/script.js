@@ -9,10 +9,10 @@ const fontSize = 20; // 文字サイズを小さく
 const columns = Math.floor(canvas.width / (fontSize * 0.6)); // 列数を増やす
 const drops = new Array(columns).fill(null).map(() => ({
   y: Math.random() * canvas.height * -1,
-  speed: 2 + Math.random() * 1, // 落下速度を速く
+  speed: 0.5 + Math.random() * 0.3, // 落下速度
   lastUpdate: 0,
   currentChar: characters[Math.floor(Math.random() * characters.length)],
-  nextUpdate: 1000 // 文字切り替えのタイミングを5秒に固定
+  nextUpdate: 500 // 文字切り替えを0.5秒に固定
 }));
 
 let mousePath = [];
@@ -36,7 +36,7 @@ function drawMatrix(timestamp) {
       // 文字の切り替え判定
       if (timestamp % drop.nextUpdate < 50) {
         drop.currentChar = characters[Math.floor(Math.random() * characters.length)];
-        drop.nextUpdate = Math.random() * 3000;
+        drop.nextUpdate = 500;
       }
       
       ctx.fillText(drop.currentChar, x, drop.y);
