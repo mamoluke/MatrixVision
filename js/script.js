@@ -75,8 +75,8 @@ canvas.addEventListener('mousemove', (event) => {
   mousePath.push({
     x: event.clientX - rect.left,
     y: event.clientY - rect.top,
-    radius: 20, // 初期半径を大きめに
-    opacity: 0.8, // 初期透明度
+    radius: 8, // 初期半径を大きめに
+    opacity: 0.5, // 初期透明度
   });
 
   // 配列が長くなりすぎないよう制限
